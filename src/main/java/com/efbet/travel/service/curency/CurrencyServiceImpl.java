@@ -32,10 +32,9 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public BigDecimal convertCurrency(String fromCurrency, String toCurrency, BigDecimal sum) {
-        if (fromCurrency.equals("EUR") && toCurrency.equals("EUR")){
+        if (fromCurrency.equals("USD") && toCurrency.equals("USD")) {
             return sum;
-        }
-        else if (fromCurrency.equals("EUR")){
+        } else if (fromCurrency.equals("USD")) {
             Currency currencyTo = this.findByCurrencyCode(toCurrency);
             double exchangeResult = currencyTo.getRates().doubleValue() * sum.doubleValue();
             return new BigDecimal(exchangeResult).setScale(2, RoundingMode.HALF_UP);
@@ -52,12 +51,12 @@ public class CurrencyServiceImpl implements CurrencyService {
     public void saveCurrency() {
         ResponseCurrencyModel receive = this.currencyApiClient.getLatestCurrencyRate();
         this.currencyRepository.deleteAll();
-        receive.getRates().forEach((key, value) -> {
+        receive.getResponse().getRates().forEach((key, value) -> {
             Currency currency = new Currency();
             currency.setCurrencyCode(key);
             currency.setRates(value);
-            currency.setBase(receive.getBase());
-            currency.setRefreshTime(receive.getDate());
+            currency.setBase(receive.getResponse().getBase());
+            currency.setRefreshTime(receive.getResponse().getDate());
             this.currencyRepository.saveAndFlush(currency);
         });
     }

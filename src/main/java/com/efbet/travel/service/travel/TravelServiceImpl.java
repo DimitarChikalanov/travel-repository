@@ -59,12 +59,13 @@ public class TravelServiceImpl implements TravelService {
         travel.setStartingCountry(model.getStartCountry());
         travel.setUser(user);
         travel.setCountry(country);
+        travel.setCurrencyCode(model.getCurrencyName());
         travel.setTotalBudget(model.getBudget());
         travel.setBudgetPerCountry(model.getBudgetPerCountry());
 
-        long count = this.neighborRepository.getNeighbourCountry(country.getId());
 
-        if (count == 0) {
+
+        if (this.neighborRepository.getNeighbourCountry(country.getId()) == 0) {
             CountryNeighbouringModel[] countryNeighbouringModels = this.countryNeighbouringApiClient.
                     getNeighboring(country.getCountryCode(), "json");
             Arrays.stream(countryNeighbouringModels).forEach(k -> {
@@ -76,15 +77,17 @@ public class TravelServiceImpl implements TravelService {
             });
         }
 
-        if (model.getBudget().divide(model.getBudgetPerCountry().multiply(BigDecimal.valueOf(count)), MathContext.DECIMAL32).compareTo(BigDecimal.valueOf(1L)) == 0) {
+        BigDecimal expense = model.getBudgetPerCountry().
+                multiply(BigDecimal.valueOf(this.neighborRepository.getNeighbourCountry(country.getId())));
+
+        if (model.getBudget().divide(expense, MathContext.DECIMAL32).compareTo(BigDecimal.valueOf(1L)) <1) {
             travel.setTravelAround(0);
             travelResponseModel.setNumberOfTours(0);
             travelResponseModel.setLeftOver(model.getBudget());
         } else {
-            int around = Math.toIntExact(model.getBudget().intValue() / (model.getBudgetPerCountry().intValue() * count));
-//            int around = model.getBudget().divide(model.getBudgetPerCountry().
-//                    multiply(BigDecimal.valueOf(count))).
-//                    intValue();
+            long count = this.neighborRepository.getNeighbourCountry(country.getId());
+            int around = Math.toIntExact(
+                    model.getBudget().intValue() / (model.getBudgetPerCountry().intValue() * count));
 
             BigDecimal left = model.getBudget().subtract(model.getBudgetPerCountry().
                     multiply(BigDecimal.valueOf(count)));
@@ -101,7 +104,6 @@ public class TravelServiceImpl implements TravelService {
             NeighbourResponseModel neighbourResponseModel = new NeighbourResponseModel();
             Set<Country> countrySet = this.countryService.getCountrySet(neighbour.getCountryCode());
             countrySet.forEach(n -> {
-                travel.setCurrencyCode(n.getCurrencyCode());
                 this.travelRepository.saveAndFlush(travel);
                 neighbourResponseModel.setName(n.getName());
                 neighbourResponseModel.setCurrencyCode(n.getCurrencyCode());

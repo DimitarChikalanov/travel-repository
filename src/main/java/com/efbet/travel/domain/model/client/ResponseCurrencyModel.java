@@ -1,42 +1,26 @@
 package com.efbet.travel.domain.model.client;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.Map;
+import java.util.Set;
 
 public class ResponseCurrencyModel {
 
-    private Map<String, BigDecimal> rates;
+    private Meta meta;
 
-    private String base;
+    private Response response;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate date;
-
-    public Map<String, BigDecimal> getRates() {
-        return rates;
+    public Meta getMeta() {
+        return meta;
     }
 
-    public void setRates(Map<String, BigDecimal> rates) {
-        this.rates = rates;
+    public void setMeta(Meta meta) {
+        this.meta = meta;
     }
 
-    public String getBase() {
-        return base;
+    public Response getResponse() {
+        return response;
     }
 
-    public void setBase(String base) {
-        this.base = base;
+    public void setResponse(Response response) {
+        this.response = response;
     }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
 }
