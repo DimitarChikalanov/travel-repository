@@ -39,9 +39,10 @@ public class CurrencyServiceImpl implements CurrencyService {
             double exchangeResult = currencyTo.getRates().doubleValue() * sum.doubleValue();
             return new BigDecimal(exchangeResult).setScale(2, RoundingMode.HALF_UP);
         }
-        Currency currencyTo = this.findByCurrencyCode(toCurrency);
 
+        Currency currencyTo = this.findByCurrencyCode(toCurrency);
         Currency currencyFrom = this.findByCurrencyCode(fromCurrency);
+
         double exchangeResult = (currencyTo.getRates().doubleValue() / (currencyFrom.getRates().doubleValue()) * (sum.doubleValue()));
         return new BigDecimal(exchangeResult).setScale(2, RoundingMode.HALF_UP);
     }
