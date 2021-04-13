@@ -102,15 +102,12 @@ public class TravelServiceImpl implements TravelService {
 
         for (Neighbour neighbour : neighbourSet) {
             NeighbourResponseModel neighbourResponseModel = new NeighbourResponseModel();
-            Set<Country> countrySet = this.countryService.getCountrySet(neighbour.getCountryCode());
-            countrySet.forEach(n -> {
+            this.countryService.getCountrySet(neighbour.getCountryCode()).forEach((key, value) -> {
                 this.travelRepository.saveAndFlush(travel);
-                neighbourResponseModel.setName(n.getName());
-                neighbourResponseModel.setCurrencyCode(n.getCurrencyCode());
-                neighbourResponseModel.setValue(this.currencyService.
-                        convertCurrency(model.getCurrencyName(),
-                                this.countryService.getCountryByName(n.getName()).
-                                        getCurrencyCode(),
+                neighbourResponseModel.setName(key);
+                neighbourResponseModel.setCurrencyCode(value);
+                neighbourResponseModel.setValue(this.currencyService.convertCurrency(model.getCurrencyName(),
+                                this.countryService.getCountryByName(key).getCurrencyCode(),
                                 model.getBudgetPerCountry()));
             });
             neighbourResponseModels.add(neighbourResponseModel);

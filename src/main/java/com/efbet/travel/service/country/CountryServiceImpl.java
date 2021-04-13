@@ -4,10 +4,12 @@ import com.efbet.travel.api.CountryApiClient;
 import com.efbet.travel.domain.entity.Country;
 import com.efbet.travel.domain.model.client.ResponseCountryModel;
 import com.efbet.travel.repository.CountryRepository;
+import com.efbet.travel.repository.CurrencyCodeView;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Set;
 
 @Service
@@ -29,8 +31,13 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
-    public Set<Country> getCountrySet(String countryCode) {
-        return this.countryRepository.findByCountryCode(countryCode);
+    public HashMap<String, String> getCountrySet(String countryCode) {
+        HashMap<String, String> country = new HashMap<>();
+        Set<CurrencyCodeView> countryByCountryCode = this.countryRepository.getCountryByCountryCode(countryCode);
+        for (CurrencyCodeView currencyCodeView : countryByCountryCode) {
+            country.putIfAbsent(currencyCodeView.getName(), currencyCodeView.getCurrencyCode());
+        }
+        return country;
     }
 
     @PostConstruct
