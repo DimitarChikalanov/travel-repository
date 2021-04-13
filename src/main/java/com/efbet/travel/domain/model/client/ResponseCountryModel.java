@@ -1,7 +1,5 @@
 package com.efbet.travel.domain.model.client;
 
-import com.efbet.travel.domain.model.client.CurrencyCodeModel;
-
 public class ResponseCountryModel {
 
     private String name;

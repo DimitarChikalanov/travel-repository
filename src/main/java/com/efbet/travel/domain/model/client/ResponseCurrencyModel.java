@@ -1,7 +1,5 @@
 package com.efbet.travel.domain.model.client;
 
-import java.util.Set;
-
 public class ResponseCurrencyModel {
 
     private Meta meta;
