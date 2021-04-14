@@ -15,6 +15,7 @@ import com.efbet.travel.service.country.CountryService;
 import com.efbet.travel.service.curency.CurrencyService;
 import com.efbet.travel.service.user.UserService;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -33,6 +34,7 @@ public class TravelServiceImpl implements TravelService {
     private final CountryNeighbouringApiClient countryNeighbouringApiClient;
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final String key;
 
     public TravelServiceImpl(TravelRepository travelRepository,
                              CountryService countryService,
@@ -40,8 +42,8 @@ public class TravelServiceImpl implements TravelService {
                              NeighborRepository neighborRepository,
                              CountryNeighbouringApiClient countryNeighbouringApiClient,
                              UserService userService,
-                             ModelMapper modelMapper
-    ) {
+                             ModelMapper modelMapper,
+                             @Value("${neighbours.api.key}") String key) {
         this.travelRepository = travelRepository;
         this.countryService = countryService;
         this.currencyService = currencyService;
@@ -49,6 +51,7 @@ public class TravelServiceImpl implements TravelService {
         this.countryNeighbouringApiClient = countryNeighbouringApiClient;
         this.userService = userService;
         this.modelMapper = modelMapper;
+        this.key = key;
     }
 
 
@@ -65,7 +68,7 @@ public class TravelServiceImpl implements TravelService {
 
         if (this.neighborRepository.getNeighbourCountry(country.getId()) == 0) {
             CountryNeighbouringModel[] countryNeighbouringModels = this.countryNeighbouringApiClient.
-                    getNeighboring(country.getCountryCode(), "json");
+                    getNeighboring(key, country.getCountryCode(), "json");
             Arrays.stream(countryNeighbouringModels).forEach(countryNeighbouringModel -> {
                 Neighbour neighbour = new Neighbour();
                 neighbour.setCountryCode(countryNeighbouringModel.getCountry_code());
@@ -83,7 +86,7 @@ public class TravelServiceImpl implements TravelService {
             travelResponseModel.setNumberOfTours(0);
             travelResponseModel.setLeftOver(model.getBudget());
         } else {
-           long count = this.neighborRepository.getNeighbourCountry(country.getId());
+            long count = this.neighborRepository.getNeighbourCountry(country.getId());
             int around = Math.toIntExact(
                     model.getBudget().intValue() / (model.getBudgetPerCountry().intValue() * count));
 
@@ -109,7 +112,7 @@ public class TravelServiceImpl implements TravelService {
 
                 if (currencyCode == null) {
                     neighbourResponseModel.setCurrencyCode("USD");
-                }else {
+                } else {
                     neighbourResponseModel.setCurrencyCode(countryName);
                 }
 
