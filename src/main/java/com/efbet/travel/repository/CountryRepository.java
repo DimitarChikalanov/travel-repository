@@ -1,14 +1,14 @@
 package com.efbet.travel.repository;
 
 import com.efbet.travel.domain.entity.Country;
+import com.efbet.travel.repository.view.CountryView;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Set;
+import java.util.HashSet;
 
-public interface CountryRepository extends JpaRepository<Country, String>  {
+public interface CountryRepository extends JpaRepository<Country, String> {
 
     Country findByName(String countryName);
 
-    Set<CurrencyCodeView> getCountryByCountryCode(String countryCode);
-    ///findByCountryCode(String countryCode);
+    HashSet<CountryView> getCountryByCountryCode(String countryCode);
 }

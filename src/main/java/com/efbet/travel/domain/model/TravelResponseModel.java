@@ -7,13 +7,13 @@ public class TravelResponseModel {
 
     private String username;
 
-    private String startCountry;
+    private String startingCountry;
 
     private int numberOfTours;
 
     private BigDecimal leftOver;
 
-    private Set<NeighbourResponseModel> neighbourResponseModels;
+    private Set<NeighbourResponseModel> visitsNeighbour;
 
 
     public String getUsername() {
@@ -24,12 +24,12 @@ public class TravelResponseModel {
         this.username = username;
     }
 
-    public String getStartCountry() {
-        return startCountry;
+    public String getStartingCountry() {
+        return startingCountry;
     }
 
-    public void setStartCountry(String startCountry) {
-        this.startCountry = startCountry;
+    public void setStartingCountry(String startingCountry) {
+        this.startingCountry = startingCountry;
     }
 
     public int getNumberOfTours() {
@@ -48,11 +48,11 @@ public class TravelResponseModel {
         this.leftOver = leftOver;
     }
 
-    public Set<NeighbourResponseModel> getNeighbourResponseModels() {
-        return neighbourResponseModels;
+    public Set<NeighbourResponseModel> getVisitsNeighbour() {
+        return visitsNeighbour;
     }
 
-    public void setNeighbourResponseModels(Set<NeighbourResponseModel> neighbourResponseModels) {
-        this.neighbourResponseModels = neighbourResponseModels;
+    public void setVisitsNeighbour(Set<NeighbourResponseModel> visitsNeighbour) {
+        this.visitsNeighbour = visitsNeighbour;
     }
 }

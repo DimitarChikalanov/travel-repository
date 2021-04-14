@@ -10,7 +10,7 @@ public class TravelRequestModel {
     private String userName;
 
     @NotBlank
-    private String startCountry;
+    private String startingCountry;
 
     @DecimalMin(value = "0.0")
     private BigDecimal budget;
@@ -19,7 +19,7 @@ public class TravelRequestModel {
     private BigDecimal budgetPerCountry;
 
     @NotBlank
-    private String currencyName;
+    private String currencyCode;
 
     public String getUserName() {
         return userName;
@@ -29,12 +29,12 @@ public class TravelRequestModel {
         this.userName = userName;
     }
 
-    public String getStartCountry() {
-        return startCountry;
+    public String getStartingCountry() {
+        return startingCountry;
     }
 
-    public void setStartCountry(String startCountry) {
-        this.startCountry = startCountry;
+    public void setStartingCountry(String startingCountry) {
+        this.startingCountry = startingCountry;
     }
 
     public BigDecimal getBudget() {
@@ -53,11 +53,11 @@ public class TravelRequestModel {
         this.budgetPerCountry = budgetPerCountry;
     }
 
-    public String getCurrencyName() {
-        return currencyName;
+    public String getCurrencyCode() {
+        return currencyCode;
     }
 
-    public void setCurrencyName(String currencyName) {
-        this.currencyName = currencyName;
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
     }
 }

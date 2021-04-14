@@ -32,16 +32,20 @@ public class CurrencyServiceImpl implements CurrencyService {
 
     @Override
     public BigDecimal convertCurrency(String fromCurrency, String toCurrency, BigDecimal sum) {
-        if (fromCurrency.equals("USD") && toCurrency.equals("USD")) {
-            return sum;
-        } else if (fromCurrency.equals("USD")) {
-            Currency currencyTo = this.findByCurrencyCode(toCurrency);
-            double exchangeResult = currencyTo.getRates().doubleValue() * sum.doubleValue();
-            return new BigDecimal(exchangeResult).setScale(2, RoundingMode.HALF_UP);
+
+        if (toCurrency == null){
+            toCurrency = "USD";
         }
 
         Currency currencyTo = this.findByCurrencyCode(toCurrency);
         Currency currencyFrom = this.findByCurrencyCode(fromCurrency);
+
+        if (fromCurrency.equals("USD") && toCurrency.equals("USD")) {
+            return sum;
+        } else if (fromCurrency.equals("USD")) {
+            double exchangeResult = currencyTo.getRates().doubleValue() * sum.doubleValue();
+            return new BigDecimal(exchangeResult).setScale(2, RoundingMode.HALF_UP);
+        }
 
         double exchangeResult = (currencyTo.getRates().doubleValue() / (currencyFrom.getRates().doubleValue()) * (sum.doubleValue()));
         return new BigDecimal(exchangeResult).setScale(2, RoundingMode.HALF_UP);

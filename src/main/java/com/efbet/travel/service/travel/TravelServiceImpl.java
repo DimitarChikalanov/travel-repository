@@ -14,6 +14,7 @@ import com.efbet.travel.repository.TravelRepository;
 import com.efbet.travel.service.country.CountryService;
 import com.efbet.travel.service.curency.CurrencyService;
 import com.efbet.travel.service.user.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -31,13 +32,15 @@ public class TravelServiceImpl implements TravelService {
     private final NeighborRepository neighborRepository;
     private final CountryNeighbouringApiClient countryNeighbouringApiClient;
     private final UserService userService;
+    private final ModelMapper modelMapper;
 
     public TravelServiceImpl(TravelRepository travelRepository,
                              CountryService countryService,
                              CurrencyService currencyService,
                              NeighborRepository neighborRepository,
                              CountryNeighbouringApiClient countryNeighbouringApiClient,
-                             UserService userService
+                             UserService userService,
+                             ModelMapper modelMapper
     ) {
         this.travelRepository = travelRepository;
         this.countryService = countryService;
@@ -45,34 +48,29 @@ public class TravelServiceImpl implements TravelService {
         this.neighborRepository = neighborRepository;
         this.countryNeighbouringApiClient = countryNeighbouringApiClient;
         this.userService = userService;
+        this.modelMapper = modelMapper;
     }
 
 
     @Override
     public TravelResponseModel doTravel(TravelRequestModel model) {
-        TravelResponseModel travelResponseModel = new TravelResponseModel();
         User user = this.userService.getUser(model.getUserName());
-        travelResponseModel.setUsername(user.getUsername());
-        Country country = this.countryService.getCountryByName(model.getStartCountry());
-        travelResponseModel.setStartCountry(country.getName());
-        Travel travel = new Travel();
-        travel.setStartingCountry(model.getStartCountry());
+        Country country = this.countryService.getCountryByName(model.getStartingCountry());
+        Travel travel = this.modelMapper.map(model, Travel.class);
         travel.setUser(user);
         travel.setCountry(country);
-        travel.setCurrencyCode(model.getCurrencyName());
-        travel.setTotalBudget(model.getBudget());
-        travel.setBudgetPerCountry(model.getBudgetPerCountry());
-
+        TravelResponseModel travelResponseModel = this.modelMapper.map(travel, TravelResponseModel.class);
+        travelResponseModel.setUsername(user.getUsername());
 
 
         if (this.neighborRepository.getNeighbourCountry(country.getId()) == 0) {
             CountryNeighbouringModel[] countryNeighbouringModels = this.countryNeighbouringApiClient.
                     getNeighboring(country.getCountryCode(), "json");
-            Arrays.stream(countryNeighbouringModels).forEach(k -> {
+            Arrays.stream(countryNeighbouringModels).forEach(countryNeighbouringModel -> {
                 Neighbour neighbour = new Neighbour();
+                neighbour.setCountryCode(countryNeighbouringModel.getCountry_code());
+                neighbour.setCountryName(countryNeighbouringModel.getCountry_name());
                 neighbour.setCountry(country);
-                neighbour.setCountryName(k.getCountry_name());
-                neighbour.setCountryCode(k.getCountry_code());
                 this.neighborRepository.saveAndFlush(neighbour);
             });
         }
@@ -80,12 +78,12 @@ public class TravelServiceImpl implements TravelService {
         BigDecimal expense = model.getBudgetPerCountry().
                 multiply(BigDecimal.valueOf(this.neighborRepository.getNeighbourCountry(country.getId())));
 
-        if (model.getBudget().divide(expense, MathContext.DECIMAL32).compareTo(BigDecimal.valueOf(1L)) <1) {
+        if (model.getBudget().divide(expense, MathContext.DECIMAL32).compareTo(BigDecimal.valueOf(1L)) < 1) {
             travel.setTravelAround(0);
             travelResponseModel.setNumberOfTours(0);
             travelResponseModel.setLeftOver(model.getBudget());
         } else {
-            long count = this.neighborRepository.getNeighbourCountry(country.getId());
+           long count = this.neighborRepository.getNeighbourCountry(country.getId());
             int around = Math.toIntExact(
                     model.getBudget().intValue() / (model.getBudgetPerCountry().intValue() * count));
 
@@ -97,25 +95,34 @@ public class TravelServiceImpl implements TravelService {
             travelResponseModel.setLeftOver(left);
         }
 
+        this.travelRepository.saveAndFlush(travel);
+
         Set<Neighbour> neighbourSet = this.neighborRepository.findByCountry(country);
         Set<NeighbourResponseModel> neighbourResponseModels = new HashSet<>();
 
-        for (Neighbour neighbour : neighbourSet) {
+        neighbourSet.forEach(neighbour -> {
             NeighbourResponseModel neighbourResponseModel = new NeighbourResponseModel();
-            this.countryService.getCountrySet(neighbour.getCountryCode()).forEach((key, value) -> {
-                this.travelRepository.saveAndFlush(travel);
-                neighbourResponseModel.setName(key);
-                neighbourResponseModel.setCurrencyCode(value);
-                neighbourResponseModel.setValue(this.currencyService.convertCurrency(model.getCurrencyName(),
-                                this.countryService.getCountryByName(key).getCurrencyCode(),
-                                model.getBudgetPerCountry()));
+            this.countryService.getCurrencyCode(neighbour.getCountryCode()).forEach((currencyCode, countryName) -> {
+
+
+                neighbourResponseModel.setName(countryName);
+
+                if (currencyCode == null) {
+                    neighbourResponseModel.setCurrencyCode("USD");
+                }else {
+                    neighbourResponseModel.setCurrencyCode(countryName);
+                }
+
+                neighbourResponseModel.setValue(this.currencyService.convertCurrency(
+                        model.getCurrencyCode(),
+                        currencyCode,
+                        model.getBudgetPerCountry()));
             });
             neighbourResponseModels.add(neighbourResponseModel);
-        }
+        });
 
-        travelResponseModel.setNeighbourResponseModels(neighbourResponseModels);
+        travelResponseModel.setVisitsNeighbour(neighbourResponseModels);
 
         return travelResponseModel;
     }
-
 }
