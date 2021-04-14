@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
-import java.util.Set;
+import java.util.HashMap;
 
 @Service
 public class CountryServiceImpl implements CountryService {
@@ -29,20 +29,24 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
-    public Set<Country> getCountrySet(String countryCode) {
-        return this.countryRepository.findByCountryCode(countryCode);
+    public HashMap<String, String> getCurrencyCode(String countryCode) {
+        HashMap<String, String> country = new HashMap<>();
+        this.countryRepository.getCountryByCountryCode(countryCode).forEach(currencyCodeView -> {
+            country.putIfAbsent(currencyCodeView.getCurrencyCode(), currencyCodeView.getName());
+        });
+        return country;
     }
 
     @PostConstruct
     public void saveCountryInDb() {
         if (this.countryRepository.count() == 0) {
             ResponseCountryModel[] receive = this.countryApiClient.getAllEuCountry();
-            Arrays.stream(receive).forEach(e -> {
+            Arrays.stream(receive).forEach(countryModel -> {
                 Country country = new Country();
-                country.setName(e.getName());
-                country.setCountryCode(e.getAlpha2Code());
-                Arrays.stream(e.getCurrencies()).forEach(k -> {
-                    country.setCurrencyCode(k.getCode());
+                country.setName(countryModel.getName());
+                country.setCountryCode(countryModel.getAlpha2Code());
+                Arrays.stream(countryModel.getCurrencies()).forEach(codeModel -> {
+                    country.setCurrencyCode(codeModel.getCode());
                     this.countryRepository.saveAndFlush(country);
                 });
             });

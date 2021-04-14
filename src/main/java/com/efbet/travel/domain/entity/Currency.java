@@ -18,7 +18,7 @@ public class Currency extends BaseEntity {
 
     private LocalDate refreshTime;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     public String getCurrencyCode() {
         return currencyCode;
     }

@@ -11,7 +11,7 @@ public class Travel extends BaseEntity {
 
     private String startingCountry;
 
-    private BigDecimal totalBudget;
+    private BigDecimal budget;
 
     private BigDecimal budgetPerCountry;
 
@@ -31,12 +31,12 @@ public class Travel extends BaseEntity {
         this.startingCountry = startingCountry;
     }
 
-    public BigDecimal getTotalBudget() {
-        return totalBudget;
+    public BigDecimal getBudget() {
+        return budget;
     }
 
-    public void setTotalBudget(BigDecimal totalBudget) {
-        this.totalBudget = totalBudget;
+    public void setBudget(BigDecimal budget) {
+        this.budget = budget;
     }
 
     public BigDecimal getBudgetPerCountry() {
