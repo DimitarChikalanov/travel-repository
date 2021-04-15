@@ -58,7 +58,7 @@ curl --location --request POST 'http://127.0.0.1:8089/api/travel' \
 --header 'Content-Type: application/json' \
 --header 'Cookie: JSESSIONID=D5214E3946ED287CD71220DA054D28D3' \
 --data-raw '{
-    "userName":"admin12",
+    "userName":"admin",
     "startingCountry":"Azerbaijan",
     "budget":4000,
     "budgetPerCountry":500,
