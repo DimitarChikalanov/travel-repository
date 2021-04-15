@@ -35,7 +35,7 @@ values (uuid_generate_v1(), 'Dimitar', 'Dimtrov', 'dimitar55');
 insert into travel.public.users (id, first_name, last_name, username)
 values (uuid_generate_v1(), 'Pesho', 'Dimtrov', 'pesho33');
 ```
-##REST Client: Feign
+## REST Client: Feign
 
 | METHOD  | PATH | DESCRIPTION |
 | ------------- | ------------- | ------------- |
