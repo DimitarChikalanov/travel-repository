@@ -6,7 +6,6 @@ public class Meta {
 
     private String disclaimer;
 
-
     public int getCode() {
         return code;
     }
