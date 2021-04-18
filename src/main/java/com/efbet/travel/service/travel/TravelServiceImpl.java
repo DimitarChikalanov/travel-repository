@@ -107,7 +107,6 @@ public class TravelServiceImpl implements TravelService {
             NeighbourResponseModel neighbourResponseModel = new NeighbourResponseModel();
             this.countryService.getCurrencyCode(neighbour.getCountryCode()).forEach((currencyCode, countryName) -> {
 
-
                 neighbourResponseModel.setName(countryName);
 
                 if (currencyCode == null) {
