@@ -57,7 +57,7 @@ Curl for Travel
 curl --location --request POST 'http://127.0.0.1:8089/api/travel' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "userName":"admin",
+    "username":"admin",
     "startingCountry":"Azerbaijan",
     "budget":4000,
     "budgetPerCountry":500,
