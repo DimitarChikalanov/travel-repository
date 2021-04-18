@@ -113,7 +113,7 @@ public class TravelServiceImpl implements TravelService {
                 if (currencyCode == null) {
                     neighbourResponseModel.setCurrencyCode("USD");
                 } else {
-                    neighbourResponseModel.setCurrencyCode(countryName);
+                    neighbourResponseModel.setCurrencyCode(currencyCode);
                 }
 
                 neighbourResponseModel.setValue(this.currencyService.convertCurrency(
