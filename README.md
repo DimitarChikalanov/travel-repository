@@ -23,7 +23,7 @@ spring.datasource.password=
 ## Database shema
 ![countries1](https://user-images.githubusercontent.com/59176864/114776687-6bcbf900-9d7b-11eb-9f6c-374a2165a991.png)
 
-## Exucute Sql script
+## Execute Sql script
 After starting the application, we run the following sql script.
 ```bash
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -50,7 +50,7 @@ values (uuid_generate_v1(), 'Pesho', 'Dimtrov', 'pesho33');
 | POST  | /api/travel | Start new travel  |
 
 ## Curl
-Curl for Car
+Curl for Travel
 
 1.Start new travel
 ```bash
