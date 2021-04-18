@@ -15,7 +15,6 @@ public class TravelResponseModel {
 
     private Set<NeighbourResponseModel> visitsNeighbour;
 
-
     public String getUsername() {
         return username;
     }

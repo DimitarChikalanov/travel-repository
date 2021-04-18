@@ -22,7 +22,7 @@ class TravelServiceImplTest {
     @Test
     public void startTripTest(){
         TravelRequestModel travelRequestModel = new TravelRequestModel();
-        travelRequestModel.setUserName("admin");
+        travelRequestModel.setUsername("admin");
         travelRequestModel.setStartingCountry("Georgia");
         travelRequestModel.setBudget(BigDecimal.valueOf(4000));
         travelRequestModel.setBudgetPerCountry(BigDecimal.valueOf(500));
@@ -39,7 +39,7 @@ class TravelServiceImplTest {
     @Test
     public void startingTripOnSmallBudget(){
         TravelRequestModel travelRequestModel = new TravelRequestModel();
-        travelRequestModel.setUserName("admin");
+        travelRequestModel.setUsername("admin");
         travelRequestModel.setStartingCountry("Brazil");
         travelRequestModel.setBudget(BigDecimal.valueOf(4000));
         travelRequestModel.setBudgetPerCountry(BigDecimal.valueOf(5500));
