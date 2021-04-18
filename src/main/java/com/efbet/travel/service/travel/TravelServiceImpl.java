@@ -57,7 +57,7 @@ public class TravelServiceImpl implements TravelService {
 
     @Override
     public TravelResponseModel doTravel(TravelRequestModel model) {
-        User user = this.userService.getUser(model.getUserName());
+        User user = this.userService.getUser(model.getUsername());
         Country country = this.countryService.getCountryByName(model.getStartingCountry());
         Travel travel = this.modelMapper.map(model, Travel.class);
         travel.setUser(user);
