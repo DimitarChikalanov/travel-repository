@@ -14,14 +14,23 @@ import com.efbet.travel.repository.TravelRepository;
 import com.efbet.travel.service.country.CountryService;
 import com.efbet.travel.service.curency.CurrencyService;
 import com.efbet.travel.service.user.UserService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.QuoteMode;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -36,6 +45,7 @@ public class TravelServiceImpl implements TravelService {
     private final ModelMapper modelMapper;
     private final String key;
 
+    @Autowired
     public TravelServiceImpl(TravelRepository travelRepository,
                              CountryService countryService,
                              CurrencyService currencyService,
@@ -126,5 +136,33 @@ public class TravelServiceImpl implements TravelService {
         travelResponseModel.setVisitsNeighbour(neighbourResponseModels);
 
         return travelResponseModel;
+    }
+
+    @Override
+    public ByteArrayInputStream exportCsv(String username) throws IOException {
+        User user = this.userService.getUser(username);
+        return createCsv(this.travelRepository.findAllByUser(user));
+    }
+
+    private ByteArrayInputStream createCsv(List<Travel> travelList) throws IOException {
+        String[] header= {"id","startingCountry","budget"};
+        CSVFormat csvFormat = CSVFormat.DEFAULT.withQuoteMode(QuoteMode.MINIMAL).withHeader(header);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        CSVPrinter csvPrinter = new CSVPrinter(new PrintWriter(outputStream), csvFormat);
+
+        for (Travel travel : travelList) {
+            List<String> data = Arrays.asList(
+                    String.valueOf(travel.getId()),
+                    travel.getStartingCountry(),
+                    String.valueOf(travel.getBudget())
+            );
+
+            csvPrinter.printRecord(data);
+        }
+
+        csvPrinter.flush();
+        return new ByteArrayInputStream(outputStream.toByteArray());
     }
 }
